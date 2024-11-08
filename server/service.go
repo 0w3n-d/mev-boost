@@ -255,15 +255,17 @@ func (m *BoostService) handleRegisterValidator(w http.ResponseWriter, req *http.
 		"ua":               ua,
 	})
 
-	// Add request headers
-	headers := map[string]string{
-		HeaderStartTimeUnixMS: fmt.Sprintf("%d", time.Now().UTC().UnixMilli()),
-	}
+	now := time.Now().UTC().UnixMilli()
 
 	relayRespCh := make(chan error, len(m.relays))
 
 	for _, relay := range m.relays {
 		go func(relay types.RelayEntry) {
+			// Add request headers
+			headers := map[string]string{
+				HeaderStartTimeUnixMS: fmt.Sprintf("%d", now),
+			}
+
 			url := relay.GetURI(params.PathRegisterValidator)
 			log := log.WithField("url", url)
 
